@@ -57,6 +57,17 @@ float errorRatio(int topk, vector<float> &ans_dist, vector<float> &groundt_dist)
     return -1.0;
 }
 
+float averagePrecision(int topk, vector<int> ans, vector<int> groundt){
+    float old = 0, counter = 0;
+    for (int i = 1; i <= topk; i++){
+        float a = recall(i, ans, groundt);
+        float b = precision(i, ans, groundt);
+        counter = a * abs(b - old);
+        old = b;
+    }
+    return counter;
+}
+
 int main(void)
 {
 
@@ -79,7 +90,8 @@ int main(void)
     std::getline(result, dummy);
     cout << "Entries/TopK: " << entries << " " << topK << " \n\n";
 
-    //to prevent huge file, compare line by line and output it directly
+    //mAP
+    float meanAP = 0;
 
     for (int i = 0; i < entries; i++)
     {
@@ -108,8 +120,11 @@ int main(void)
             std::cout << *i << ' ';
         cout << endl;
 
-        cout << "Recall: " << recall(topK, res, gt�ㄣ�ㄟ���ㄣ�ㄟ��) < precision(topK, res, gt) s << " Error Ratio: " << errorRatio(topK, res_dist, gt_dist) ion : " << precision << endl << endl;
+        meanAP = meanAP + averagePrecision(topK, res, gt);
+
+        cout << "Recall: " << recall(topK, res, gt) << " Precision: " << precision(topK, res, gt) << " Error Ratio: " << errorRatio(topK, res_dist, gt_dist) << endl << endl;
     }
+    cout << "MeanAveragePrecision: " << meanAP / entries <<endl;
 
     return 0;
 }
